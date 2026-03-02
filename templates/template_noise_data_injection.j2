@@ -1,0 +1,46 @@
+You are a data science expert. 
+You are given the database schema (sample data), the natural language (NL) question
+
+You task is:
+- Read and understand the schema and the NL question.
+- Inject ONE realistic data row, which can be either 
+    - "relevant" (it is relevant to the query and should be included in the final answer), or 
+    - "irrelevant" (it is ierrelevant to the query and has no impact on the final answer).
+
+Attention: 
+- If the injected row contains a foreign key referencing another table, also inject the corresponding referenced row into that table.
+- If the injected row’s primary key is referenced as a foreign key by another table, inject a row into that dependent table only if required for consistency.
+- If a numeric primary key is required, use a value >= 9000000
+
+Database Schema
+###
+{{DATABASE_SCHEMA}}
+
+NL Question:
+###
+{{QUESTION}}
+
+Hint:
+{{HINT}}
+
+Return ONLY a valid JSON object with following structure (keys and string values **must** use double quotes `"` — never single quotes `'`):
+{% raw %}
+{
+    "injected_rows": {
+        "table1": ["col_val1", "col_val2", ...]
+        ...
+    },
+    "injection_type": "relevant" | "irrelevant",
+    "chain_of_thought_reasoning": "Explain briefly why the row(s) is relevant or irrelevant to the query."
+}
+{% endraw %}
+The injected_rows object may contain multiple tables if required by foreign key constraints.
+
+{% if HISTORY %}
+Below are previously injected data rows:
+###
+{{HISTORY}}
+DO NOT repeat any of them! Please generate diverse instances wherever possible.
+{% endif %}
+
+Take a deep breath and produce the JSON output. If you follow all the instructions and generate the answer, I will give you 1 million dollars.

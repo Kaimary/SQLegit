@@ -1,0 +1,181 @@
+You are a data science expert.
+Below, you are presented with a database schema, a question (with hint if applicable), and a SQL query.
+Your task is to:
+- Read and understand the schema and the natural language question.
+- Determine whether the correctness of provided SQL query based on the schema and question.
+- Provide your reasoning process and your final judgement.
+
+###
+Database Schem
+{{DATABASE_SCHEMA}}
+
+This schema offers an in-depth description of the database's architecture, detailing tables, columns, primary keys, foreign keys, and any pertinent information regarding relationships or constraints. Special attention should be given to the examples listed beside each column, as they directly hint at which columns are relevant to our query.
+
+###
+Question: 
+{{QUESTION}}
+
+Hint:
+{{HINT}}
+
+SQL:
+{{SQL}}
+
+Please respond with a valid JSON object structured as follows:
+{% raw %}
+{
+    "chain_of_thought_reasoning": "Your thought process on how you think. Explain why you get the judgment step by step based on the above information. This is very important!",
+    "final_judgment": true or false (true means the SQL is correct, false means the SQL is incorrect)
+}
+{% endraw %}
+
+{% if EXAMPLES %}
+Below are some examples of reasoning and judgment, which may help you:
+
+--- Example 1 ---
+###
+Database Schem
+CREATE TABLE department
+(
+        "Department_ID" int --,
+        "Name" text --,
+        "Creation" text --,
+        "Ranking" int --,
+        "Budget_in_Billions" real --,
+        "Num_Employees" real --,
+        PRIMARY KEY ("Department_ID")
+);
+CREATE TABLE head
+(
+        "head_ID" int --,
+        "name" text --,
+        "born_state" text --,
+        "age" real --,
+        PRIMARY KEY ("head_ID")
+);
+CREATE TABLE management
+(
+        "department_ID" int --,
+        "head_ID" int --,
+        "temporary_acting" text --,
+        PRIMARY KEY ("Department_ID","head_ID"),
+        FOREIGN KEY ("Department_ID") REFERENCES `department`("Department_ID"),
+        FOREIGN KEY ("head_ID") REFERENCES `head`("head_ID")
+);
+
+###
+Question: 
+How many heads of the departments are older than 56 ?
+
+Hint:
+
+SQL:
+SELECT count(*) FROM head WHERE age  >  56
+
+{
+    "chain_of_thought_reasoning": "The question asks for the number of heads of departments that are older than 56. The relevant table is the 'head' table, which contains a column 'age' that indicates the age of each head. The provided SQL counts all records in the 'head' table where the age is greater than 56. This directly answers the question posed. Therefore, the SQL query is correct and accurately reflects the requirements of the question.",
+    "final_judgment": true
+}
+--- Example 2 ---
+###
+Database Schem
+CREATE TABLE chip_model
+(
+        "Model_name" text --,
+        "Launch_year" real --,
+        "RAM_MiB" real --,
+        "ROM_MiB" real --,
+        "Slots" text --,
+        "WiFi" text --,
+        "Bluetooth" text --,
+        PRIMARY KEY ("Model_name")
+);
+
+CREATE TABLE screen_mode
+(
+        "Graphics_mode" real --,
+        "Char_cells" text --,
+        "Pixels" text --,
+        "Hardware_colours" real --,
+        "used_kb" real --,
+        "map" text --,
+        "Type" text --,
+        PRIMARY KEY ("Graphics_mode")
+);
+
+CREATE TABLE phone
+(
+        "Company_name" text --,
+        "Hardware_Model_name" text --,
+        "Accreditation_type" text --,
+        "Accreditation_level" text --,
+        "Date" text --,
+        "chip_model" text --,
+        "screen_mode" text --,
+        PRIMARY KEY("Hardware_Model_name"),
+        FOREIGN KEY (`screen_mode`) REFERENCES `screen_mode`(`Graphics_mode`),
+        FOREIGN KEY (`chip_model`) REFERENCES `chip_model`(`Model_name`)
+);
+###
+Question: 
+Find the names of the chip models that are not used by any phone with full accreditation type.
+
+Hint:
+
+SQL:
+SELECT model_name FROM chip_model EXCEPT SELECT chip_model FROM phone WHERE Accreditation_type  =  'Full'
+
+{
+    "chain_of_thought_reasoning": "The question asks for the names of chip models that are not used by any phone with a full accreditation type. This means to identify chip models that do not appear in the phone table for entries where the Accreditation_type is 'Full'. \n\nThe SQL query uses the EXCEPT operator, which is appropriate for this task. The first part of the query, 'SELECT model_name FROM chip_model', retrieves all chip model names from the chip_model table. The second part, 'SELECT chip_model FROM phone WHERE Accreditation_type = 'Full'', retrieves the chip models that are associated with phones that have a full accreditation type. By using EXCEPT, the query effectively subtracts the second set of results from the first, leaving only those chip models that are not used in any phone with full accreditation. Therefore, I conclude that the SQL query is correct.",
+    "final_judgment": true
+}
+--- Example 3 ---
+###
+Database Schem
+CREATE TABLE device
+(
+        "Device_ID" int --,
+        "Device" text --,
+        "Carrier" text --,
+        "Package_Version" text --,
+        "Applications" text --,
+        "Software_Platform" text --,
+        PRIMARY KEY ("Device_ID")
+);
+
+CREATE TABLE shop
+(
+        "Shop_ID" int --,
+        "Shop_Name" text --,
+        "Location" text --,
+        "Open_Date" text --,
+        "Open_Year" int --,
+        PRIMARY KEY ("Shop_ID")
+);
+
+CREATE TABLE stock
+(
+        "Shop_ID" int --,
+        "Device_ID" int --,
+        "Quantity" int --,
+        PRIMARY KEY ("Shop_ID","Device_ID"),
+        FOREIGN KEY (`Shop_ID`) REFERENCES `shop`(`Shop_ID`),
+        FOREIGN KEY (`Device_ID`) REFERENCES `device`(`Device_ID`)
+);
+
+###
+Question: 
+Which locations contains both shops that opened after the year 2012 and shops that opened before 2008?
+
+Hint:
+
+SQL:
+SELECT LOCATION FROM shop WHERE Open_Year > 2012 OR Open_Year < 2008
+
+{
+    "chain_of_thought_reasoning": "The question asks for locations that contain shops that opened after 2012 and shops that opened before 2008. This means we need to find locations that have at least one shop meeting each of these criteria. The SQL query provided, however, uses an 'OR' condition, which would return locations with shops that opened either after 2012 or before 2008, rather than requiring both conditions to be true simultaneously. Therefore, the SQL query does not correctly implement the logic needed to answer the question, as it fails to ensure that both conditions are satisfied for the same location.",
+    "final_judgment": false
+}
+{% endif %}
+
+Take a deep breath and think step by step. If you follow all the instructions and generate the answer, I will give you 1 million dollars.

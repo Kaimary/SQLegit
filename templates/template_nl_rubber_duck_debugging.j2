@@ -1,0 +1,34 @@
+You are a data science expert.
+Below, you are presented with a database schema, a question (with hint if applicable), and a SQL query (with its exeuction result).
+Your task is to:
+- Use the Rubber Duck Debugging method to break the question into key phrases, and verify whether the semantics of each phrase is reflected in the SQL query.
+- Determine whether the SQL query's correctness based on the schema and question and provide your final judgement.
+
+Here is the input:
+
+Database Schema:
+###
+{{DATABASE_SCHEMA}}
+
+###
+Question: 
+{{QUESTION}}
+
+Hint:
+{{HINT}}
+
+SQL:
+{{SQL}}
+
+Execution (show up to 5 resulting rows):
+{{RESULT}}
+
+Please respond with a valid JSON object structured as follows:
+{% raw %}
+{
+    "chain_of_thought_reasoning": "Your rubber duck debugging process. Keep the analysis concise!",
+    "judgment": true or false (true means the SQL is correct, false means the SQL is incorrect)
+}
+{% endraw %}
+
+Take a deep breath. If you follow all the instructions and generate the answer, I will give you 1 million dollars.

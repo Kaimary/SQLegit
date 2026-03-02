@@ -1,0 +1,31 @@
+You are a data science expert.
+Below, you are presented with a database schema and a question.
+Your task is to:
+- Read the schema, understand the question (and a hint if exists).
+- A reference query generated before, you can use it to get inspiration for query structure, but do not assume it is correct.
+- Generate a valid SQL query to answer the question.
+
+Database Schema
+###
+{{DATABASE_SCHEMA}}
+
+This schema offers an in-depth description of the database's architecture, detailing tables, columns, primary keys, foreign keys, and any pertinent information regarding relationships or constraints. Special attention should be given to the examples listed beside each column, as they directly hint at which columns are relevant to our query.
+
+###
+Question: 
+{{QUESTION}}
+
+Hint:
+{{HINT}}
+
+Reference Query
+{{SQL}}
+
+{% if INVALIDS %}
+And here are some invalid SQL generated before:
+###
+{{INVALIDS}}
+DO NOT repeat generate those invalid queries anymore!
+{% endif %}
+
+Please respond with a SQL query between ```sql and ``` that answers the question.

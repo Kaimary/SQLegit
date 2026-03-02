@@ -1,0 +1,38 @@
+
+You are a data science expert.
+Below, you are presented with a database schema, a question (with hint if applicable), a final SQL query and intermediate sub-SQLs with corresponding executions.
+Your task is to:
+- Apply the Rubber Duck Debugging method by examining EACH sub-SQL in order. 
+- Reasoning should be grounded in the provided resulting data, not just high-level semantics.
+- Evaluate whether the overall SQL query is EXECUTION-EQUIVALENT to the question.
+- Minor semantic differences (e.g., in grouping, joins, DISTINCT usage) are acceptable as long as they do NOT change the final result.
+
+Here is the input:
+
+Database Schema:
+###
+{{DATABASE_SCHEMA}}
+
+###
+Question: 
+{{QUESTION}}
+
+Hint:
+{{HINT}}
+
+SQL:
+{{SQL}}
+{{RESULT}}
+
+Intermediate Sub-SQLs:
+{{SUBSQLS}}
+
+Please respond with a valid JSON object structured as follows:
+{% raw %}
+{
+    "chain_of_thought_reasoning": "Your rubber duck debugging process. Keep the analysis short!",
+    "judgment": true or false (true means the SQL is correct, false means the SQL is incorrect),
+}
+{% endraw %}
+
+Take a deep breath. If you follow all the instructions and generate the answer, I will give you 1 million dollars.

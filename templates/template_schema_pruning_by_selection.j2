@@ -1,0 +1,38 @@
+You are a data science expert.
+Below, you are presented with a question and a partial database schema of those tables having many columns.
+Your task is to:
+- Read and understand the partial schema and the natural language question.
+- Select TOP 15 columns in each table that could be relevant to answering the question.
+
+Partial Database Schema
+###
+{{LARGE_TABLES}}
+
+###
+Question: 
+{{QUESTION}}
+
+Hint:
+{{HINT}}
+
+Please respond with a valid JSON object as follows:
+{% raw %}
+{
+    "table1": ["column1", "column2", ...],
+    "table2": ["column1", "column2", ...],
+    ...
+}
+{% endraw %}
+
+Make sure each table outputs with 15 columns that are mostly relevant to answering the question. 
+You MUST select column names by EXACTLY COPYING them from the provided schema. DO NOT invent, rename, normalize, or infer column names.
+
+
+{% if ERROR %}
+Below are error messages received from previously failed results:
+###
+{{ERROR}}
+Pay attention! Please DO NOT make same mistakes in this attempt.
+{% endif %}
+
+Take a deep breath and think step by step. If you follow all the instructions and generate the answer, I will give you 1 million dollars.

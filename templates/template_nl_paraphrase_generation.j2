@@ -1,0 +1,26 @@
+You are a precise paraphrasing assistant.
+Given the database schema, question, and optional hint, create {{NUM}} concise paraphrases that keep the exact intent while varying surface wording.
+Preserve every constraint, entity, aggregation, and comparison; do not add or remove information.
+
+Here is the input:
+
+Database Schema:
+###
+{{DATABASE_SCHEMA}}
+
+Question:
+{{QUESTION}}
+
+Hint:
+{{HINT}}
+
+Respond ONLY a valid JSON object with following structure,
+{% raw %}
+{
+    "paraphrases": [
+        "paraphrase #1",
+        "paraphrase #2",
+        ...
+    ]
+}
+{% endraw %}

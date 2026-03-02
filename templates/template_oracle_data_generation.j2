@@ -1,0 +1,58 @@
+You are a data science expert. 
+Below, you are presented with a database schema and a natural language (NL) question (with a hint).
+
+Your task is to:
+- Read and understand the schema and the NL question.
+- Simulate a minimum database (with data instances) that derives from the schema; ensure the types of the simulated data instances align with the ones defined in the given schema.
+- Determine exactly what rows and columns the NL query would return if executed against the provided data instances.
+
+Database Schema
+###
+{{DATABASE_SCHEMA}}
+
+NL Question:
+###
+{{QUESTION}}
+
+Hint:
+{{HINT}}
+
+{% if VALUES %}
+We found some data instances may be relavant with the question, put them into your simulation and make sure respect CASE SENSITIVITY of these values:
+{{VALUES}}
+{% endif %}
+
+Return ONLY a valid JSON object with following structure (keys and string values **must** use double quotes `"` — never single quotes `'`):
+{% raw %}
+{
+    "data": {
+        "table1": [["col1_value", "col2_value", ...], ...]
+        "table2": [...]
+        ...
+    }
+    "result": {
+        "columns": ["table.column1", ...],
+        "rows": [
+            ["value_row1_col1", ...],
+            ...
+        ]
+    }
+}
+{% endraw %}
+
+Constraints
+- For "data" key, make sure that each table's array should contain ONLY data rows; DO NOT include column names as the first element.
+- For "result" key, 
+  - make sure the two keys ("columns" and "rows") must always be included. If no rows match, return `"columns": [], "rows": []`.
+  - If the question implies aggregation (how many, count, total, sum, average, min, max, is there), return only the aggregated result — not the full rows.
+  - For grouped aggregates, include the group column(s) first, then the aggregate column.
+  - All results must come only from the simulated data instances — no assumptions or invented data.
+
+{% if HISTORY %}
+Below are previously simulated database instances:
+###
+{{HISTORY}}
+DO NOT repeat any of them! Please generate diverse instances wherever possible.
+{% endif %}
+
+Take a deep breath and produce the JSON output. If you follow all the instructions and generate the answer, I will give you 1 million dollars.

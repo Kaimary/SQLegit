@@ -1,0 +1,17 @@
+checklist.egg-info/
+.vscode/
+__pycache__
+.ipynb_checkpoints
+v8-compile-cache-0
+node_modules
+dist
+_release_data
+build
+venv/
+data/
+output/
+.env
+.env.new
+test_*
+scripts/
+.env.bak
