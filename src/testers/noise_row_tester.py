@@ -8,15 +8,15 @@ from collections import Counter
 from munch import Munch
 from concurrent.futures import ThreadPoolExecutor, wait, FIRST_COMPLETED
 
-# from checklist.spinners import Spinner
-from checklist.db_utils.sql_parser import is_sql_do_math, is_sql_select_distinct, is_sql_to_cast, is_sql_use_join, is_sql_use_limit
-from checklist.parsers import get_parser
-from checklist.prompts import get_prompt
-from checklist.db_manager import DatabaseManager
-from checklist.db_utils.schema_generator import DatabaseSchemaGenerator
-from checklist.base_tester import SchemaPruningMixin, BaseTester, ValidationError
-from checklist.db_utils.execution import validate_sql_query
-from checklist.db_utils.db_opt import create_sqlite_database, duplicate_sqlite_database, insert_rows_into_table, sqlite_type_map
+# from src.spinners import Spinner
+from src.db_utils.sql_parser import is_sql_do_math, is_sql_select_distinct, is_sql_to_cast, is_sql_use_join, is_sql_use_limit
+from src.parsers import get_parser
+from src.prompts import get_prompt
+from src.db_manager import DatabaseManager
+from src.db_utils.schema_generator import DatabaseSchemaGenerator
+from src.base_tester import SchemaPruningMixin, BaseTester, ValidationError
+from src.db_utils.execution import validate_sql_query
+from src.db_utils.db_opt import create_sqlite_database, duplicate_sqlite_database, insert_rows_into_table, sqlite_type_map
 
 
 class NoiseRowTester(SchemaPruningMixin, BaseTester):

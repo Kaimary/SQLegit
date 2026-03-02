@@ -5,17 +5,17 @@ import pickle
 from pathlib import Path
 from tqdm import tqdm
 
-from checklist.judges.llm_judge import LLMJudge
-from checklist.judges.guardian_judge import GuardianJudge
-from checklist.eval.bird.evaluation import execute_model
-from checklist.red.parser.schema import Schema
-from checklist.db_utils.db_info import get_db_schema_from_json
-from checklist.testers.cross_model_tester import CrossModelTester
-from checklist.testers.nl_review_tester import NLReviewTester
-from checklist.testers.noise_row_tester import NoiseRowTester
-from checklist.testers.oracle_result_tester import OracleResultTester
-from checklist.testers.self_consistency_tester import SelfConsistencyTester
-from checklist.testers.semantic_check_tester import SemanticCheckTester
+from src.judges.llm_judge import LLMJudge
+from src.judges.guardian_judge import GuardianJudge
+from src.eval.bird.evaluation import execute_model
+from src.red.parser.schema import Schema
+from src.db_utils.db_info import get_db_schema_from_json
+from src.testers.cross_model_tester import CrossModelTester
+from src.testers.nl_review_tester import NLReviewTester
+from src.testers.noise_row_tester import NoiseRowTester
+from src.testers.oracle_result_tester import OracleResultTester
+from src.testers.self_consistency_tester import SelfConsistencyTester
+from src.testers.semantic_check_tester import SemanticCheckTester
 
 DEFAULT_BACKBONE_MODEL_NAME = "gpt-4o-mini-0708"
 TEST_CLASS_MAP = {

@@ -5,12 +5,12 @@ import threading
 from munch import Munch
 from concurrent.futures import ThreadPoolExecutor, wait, FIRST_COMPLETED
 
-# from checklist.spinners import Spinner
-from checklist.parsers import get_parser
-from checklist.prompts import get_prompt
-from checklist.base_tester import SchemaPruningMixin, BaseTester, ValidationError
-from checklist.models import MODEL_CLASS_MAP, GenericLLM
-from checklist.db_utils.execution import validate_sql_query
+# from src.spinners import Spinner
+from src.parsers import get_parser
+from src.prompts import get_prompt
+from src.base_tester import SchemaPruningMixin, BaseTester, ValidationError
+from src.models import MODEL_CLASS_MAP, GenericLLM
+from src.db_utils.execution import validate_sql_query
 
 
 class CrossModelTester(SchemaPruningMixin, BaseTester):

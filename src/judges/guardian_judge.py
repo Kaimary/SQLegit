@@ -1,5 +1,5 @@
-from checklist.base_judge import BaseJudge
-from checklist.testsuite import TestSuite
+from src.base_judge import BaseJudge
+from src.testsuite import TestSuite
 
 
 class GuardianJudge(BaseJudge):

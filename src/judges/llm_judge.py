@@ -1,11 +1,11 @@
 import os
 
-from checklist.llm import LLM
-from checklist.parsers import get_parser
-from checklist.prompts import get_prompt
-from checklist.base_judge import BaseJudge
-from checklist.db_manager import DatabaseManager
-from checklist.db_utils.db_catalog.csv_utils import load_tables_description
+from src.llm import LLM
+from src.parsers import get_parser
+from src.prompts import get_prompt
+from src.base_judge import BaseJudge
+from src.db_manager import DatabaseManager
+from src.db_utils.db_catalog.csv_utils import load_tables_description
 
 
 class LLMJudge(BaseJudge):

@@ -4,9 +4,9 @@ import copy
 import logging
 from munch import Munch
 
-from checklist.red.parser.report import BugLevel
-from checklist.red.parser.red_parser import Query
-from checklist.base_tester import BaseTester
+from src.red.parser.report import BugLevel
+from src.red.parser.red_parser import Query
+from src.base_tester import BaseTester
 
 class SemanticCheckTester(BaseTester):
     def __init__(self):

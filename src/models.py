@@ -1,6 +1,6 @@
 import json
 from abc import ABC
-from checklist.llm import LLM
+from src.llm import LLM
 
 class BaseNL2SQLModel(ABC):
     def __init__(self):

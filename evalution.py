@@ -3,7 +3,7 @@ import os
 from tqdm import tqdm
 from collections import defaultdict
 
-from checklist.eval.bird.evaluation import execute_model
+from src.eval.bird.evaluation import execute_model
 
 
 def run_evalution(judge_name, judgment_file_path, benchmark_name, db_root_path, data_file_path, nl2sql_model_name=None, predicted_sql_path=None):    

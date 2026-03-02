@@ -9,15 +9,16 @@ import json
 import re
 import time
 
+from pathlib import Path
 from collections import defaultdict
 from copy import deepcopy
 from typing import List
 from sql_metadata import Parser
 from sql_metadata.token import SQLToken
 
-from checklist.red.parser.schema import Schema
-from checklist.red.parser.schema_item import Table, Column
-from checklist.red.parser.utils import (
+from src.red.parser.schema import Schema
+from src.red.parser.schema_item import Table, Column
+from src.red.parser.utils import (
     sql_tokens_to_sql,
     locate_subquery,
     is_number,
@@ -26,7 +27,7 @@ from checklist.red.parser.utils import (
     all_is_number,
     is_int,
 )
-from checklist.red.parser.report import Report, BugLevel
+from src.red.parser.report import Report, BugLevel
 
 
 def parse_as_unit(tokens: List[SQLToken], db_schema: Schema):
@@ -736,7 +737,8 @@ class JointPredicate:
 
 
 class Expression:
-    with open("./checklist/red/parser/knowledge_base/expression.json", "r") as f:
+    _rules_path = Path(__file__).resolve().parent / "knowledge_base" / "expression.json"
+    with _rules_path.open("r", encoding="utf-8") as f:
         rules = json.load(f)
 
     _CAL = {"+", "-", "*", "/", "||"}

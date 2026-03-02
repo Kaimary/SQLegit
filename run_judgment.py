@@ -10,8 +10,8 @@ from pathlib import Path
 from datetime import datetime
 
 from evalution import run_evalution, run_nl2sql_bugs_evalution
-from checklist.judges.llm_judge import LLMJudge
-from checklist.utils import createJudge, get_data_from_bench, get_red_schemas, print_summary
+from src.judges.llm_judge import LLMJudge
+from src.utils import createJudge, get_data_from_bench, get_red_schemas, print_summary
 
 if __name__ == '__main__':
     args_parser = argparse.ArgumentParser()

@@ -8,8 +8,8 @@ from copy import deepcopy
 from typing import Dict, List
 import networkx as nx
 
-from checklist.red.parser.schema_item import Table, Column
-from checklist.red.parser.utils import all_is_int, all_is_number, execute_sql, type_of_query
+from src.red.parser.schema_item import Table, Column
+from src.red.parser.utils import all_is_int, all_is_number, execute_sql, type_of_query
 
 
 class Schema:
@@ -141,7 +141,7 @@ class Schema:
         return column.col_type
 
     def add_query_table(self, table):
-        from checklist.red.parser.red_parser import Query
+        from src.red.parser.red_parser import Query
 
         if isinstance(table, Table):
             self.query_tabs.append(deepcopy(table))
@@ -209,8 +209,8 @@ class Schema:
                 return col
 
     def add_alias(self, alias: str, target):
-        from checklist.red.parser.red_parser import Query
-        from checklist.red.parser.red_parser import Expression
+        from src.red.parser.red_parser import Query
+        from src.red.parser.red_parser import Expression
 
         alias = alias.upper()
         if isinstance(target, Table) or isinstance(target, Column):

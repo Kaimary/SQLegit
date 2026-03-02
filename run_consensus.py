@@ -7,7 +7,7 @@ from tqdm import tqdm
 from dataclasses import dataclass
 from collections import defaultdict
 
-from checklist.eval.bird.evaluation import execute_model
+from src.eval.bird.evaluation import execute_model
 
 _COMMENT_LINE_RE = re.compile(r"--[^\n]*")
 _COMMENT_BLOCK_RE = re.compile(r"/\*.*?\*/", flags=re.DOTALL)
