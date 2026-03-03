@@ -1,13 +1,36 @@
-# sqlegit
+# SQLegit: A Testing Framework for Trustworthy NL2SQL
+> Determine the correctness of NL2SQL translations using testing techniques.
 
-Judge/evaluate NL2SQL predictions (Spider/BIRD/NL2SQL-Bugs style datasets) with either:
+<p align="center">
+   <a href="https://github.com/Kaimary/SQLegit/stargazers">
+       <img alt="stars" src="https://img.shields.io/github/stars/Kaimary/SQLegit" />
+   </a>
+   <a href="https://github.com/Kaimary/SQLegit/network/members">
+       <img alt="forks" src="https://img.shields.io/github/forks/Kaimary/SQLegit?color=FF8000" />
+   </a>
+   <a href="https://github.com/Kaimary/SQLegit/issues">
+      <img alt="issues" src="https://img.shields.io/github/issues/Kaimary/SQLegit?color=0088ff" />
+   </a>
+   <br />
+</p>
 
-- an LLM judge (single model decision), or
-- a "Guardian" test suite (semantic checks + metamorphic/oracle/self-consistency style tests).
+## Overview
 
-This repo does **not** ship benchmark data/DBs; you point it at your local dataset JSON + SQLite DB folder.
+## About SQLegit
 
-## Quickstart (Docker)
+**TL;DR:** SQLegit is an evaluation harness for NL2SQL systems. Given an NL2SQL translation, it runs a test suite with fast-running test cases to provide a correctness judgment.
+
+## Quick Start
+
+### Prerequisites
+
+- Python 3.10 is recommended (the Docker image uses Python 3.10).
+- A dataset JSON (see the run modes below) and SQLite DB folder.
+- One LLM provider credential set:
+  - Azure OpenAI via `langchain-openai` (e.g. `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, `OPENAI_API_VERSION`), or
+  - DeepSeek via `langchain-deepseek` (`DEEPSEEK_API_KEY`)
+
+### Docker
 
 Build:
 
@@ -20,39 +43,18 @@ Run (mount your data; pass env via `--env-file`):
 ```bash
 docker run --rm -it \
   --env-file .env \
-  -v "$PWD:/work" \
-  -w /work \
-  sqlegit run_judgment.py --help
+  -v "/your-data-path:/SQLegit/data" \
+  sqlegit /bin/bash
 ```
 
-## Local Setup (Python)
+## Try It
 
-Python 3.10 is recommended (the Docker image uses Python 3.10).
-
-Install dependencies (see `Dockerfile` for the pinned list) and export env vars (or use a local `.env`).
-
-At minimum you typically need:
-
-- `TEST_INSTANCE_ROOT_PATH`: where testers write artifacts/caches (e.g. `test_cases/`)
-- one LLM provider credential set:
-  - Azure OpenAI via `langchain-openai` (e.g. `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, `OPENAI_API_VERSION`), or
-  - DeepSeek via `langchain-deepseek` (`DEEPSEEK_API_KEY`)
-
-Notes:
-- `.env` is loaded by the tester stack (via `python-dotenv`) and should **not** be committed.
-- You can control Azure call timeout with `CHECKLIST_LLM_TIMEOUT_S` / `LLM_TIMEOUT_S` (seconds).
-
-## Run Judgments (`run_judgment.py`)
-
-This is the main entrypoint. It reads a dataset JSON and writes a JSONL file under a sibling `results/` directory.
-
-Show CLI:
+`run_judgment.py` is the main entrypoint. It reads a dataset JSON and writes a JSONL file under a sibling `results/` directory.
 
 ```bash
 python run_judgment.py --help
 ```
 
-### Spider/BIRD-style run (with a prediction file)
 
 Requirements:
 - dataset JSON contains at least `db_id`, `question`, and `query` or `SQL`
@@ -61,29 +63,11 @@ Requirements:
 - `--schema_file_path` is a JSON list with `db_id` entries (Spider `tables.json`-style)
 - `--db_root_path` contains per-db folders: `<db_id>/<db_id>.sqlite`
 
-Example (LLM judge):
+Example:
 
 ```bash
 python run_judgment.py \
-  --judge_name gpt-4o-mini-0708 \
-  --benchmark_name spider \
-  --db_root_path /path/to/spider/database \
-  --data_file_path /path/to/spider/dev.json \
-  --schema_file_path /path/to/spider/tables.json \
-  --predicted_sql_path /path/to/preds.sql
-```
-
-### NL2SQL-Bugs-style run (dataset provides SQL + label)
-
-Requirements:
-- dataset JSON contains at least `db_id`, `question`, `evidence`, `sql`, `label`
-- DB layout is still `<db_root_path>/<db_id>/<db_id>.sqlite`
-
-Example (Guardian suite, multiple checks):
-
-```bash
-python run_judgment.py \
-  --judge_name "guardian+sem+nos+crs+orc+slf+nlr(gpt-4o-mini-0708)" \
+  --judge_name "sqlegit+sem+nos+crs+orc+slf+nlr(gpt-4o-mini-0708)" \
   --benchmark_name nl2sql-bugs \
   --db_root_path /path/to/databases \
   --data_file_path /path/to/NL2SQL-Bugs.json \
@@ -91,47 +75,23 @@ python run_judgment.py \
 ```
 
 How `--judge_name` is interpreted:
-- if it contains `guardian` (case-insensitive), the runner builds a `GuardianJudge`
+- if it contains `sqlegit` (case-insensitive), the runner builds a `SQLegitJudge`
   - backbone model is parsed from the name if it contains `gpt-...` (defaults to `gpt-4o-mini-0708`)
   - any of these substrings enable the matching check: `sem`, `nos`, `crs`, `orc`, `nlr`, `slf`
-- otherwise it runs `LLMJudge` with `model_name = --judge_name`
 
-### Resume an interrupted run
+## Consensus (`run_consensus.py`)
 
-`--append_mode` continues writing into the same output JSONL (it counts existing lines and resumes from there):
-
-```bash
-python run_judgment.py ... --append_mode
-```
-
-### Evaluate an existing judgment file
-
-`--eval_mode` reads the produced JSONL and prints accuracy/confusion-matrix style metrics:
-
-```bash
-python run_judgment.py \
-  --eval_mode \
-  --judge_name guardian+sem+nos+crs+orc+slf+nlr \
-  --benchmark_name spider \
-  --db_root_path /path/to/dbs \
-  --data_file_path /path/to/dev.json \
-  --schema_file_path /path/to/tables.json \
-  --predicted_sql_path /path/to/preds.sql
-```
-
-## Combine Per-Check Outputs (`run_consensus.py`)
-
-If you run Guardian checks **separately** (one JSONL per check), you can combine them with a short-circuit + weighted vote policy:
+If you run SQLegit checks **separately** (one JSONL per check), you can combine them with a short-circuit + weighted vote policy:
 
 ```bash
 python run_consensus.py --help
 ```
 
-To generate the per-check JSONLs, run Guardian with only one check enabled each time, e.g.:
+To generate the per-check JSONLs, run SQLegit with only one check enabled each time, e.g.:
 
 ```bash
 python run_judgment.py \
-  --judge_name "guardian+sem(gpt-4o-mini-0708)" \
+  --judge_name "sqlegit+sem(gpt-4o-mini-0708)" \
   --benchmark_name nl2sql-bugs \
   --db_root_path /path/to/databases \
   --data_file_path /path/to/NL2SQL-Bugs.json \
@@ -154,8 +114,6 @@ python run_consensus.py \
   --out-jsonl /path/to/final_consensus.jsonl
 ```
 
-Safety note: `run_consensus.py` may execute the predicted SQL against SQLite to check if the result set is empty; it opens DBs in **read-only** mode and only executes queries that look like `SELECT`/`WITH`.
-
 ## Output Files
 
 `run_judgment.py` writes under:
@@ -166,14 +124,26 @@ Safety note: `run_consensus.py` may execute the predicted SQL against SQLite to 
 
 Each line is a JSON dict containing:
 - `final_judgment`: `true` / `false` / `"UNDETERMINED"`
-- one key per enabled Guardian check (e.g. `semantic_check`, `oracle_result`, ...), each with details like:
+- one key per enabled SQLegit check (e.g. `semantic_check`, `oracle_result`, ...), each with details like:
   - `judgment`, `confidence`, `tokens_used`, `elapsed`, per-test-case results, traces, etc.
 
-## Repo Layout
+## Code Structure
 
-- `src/`: core library (judges, testers, DB utils, RED parser)
-- `templates/`: prompt templates used by the LLM-based components
-- `scripts/`: helper scripts for analysis/plotting/one-off utilities
-- `run_judgment.py`: run a judge and write JSONL
-- `evalution.py`: evaluate judgments against gold correctness/labels (name kept for compatibility)
-- `run_consensus.py`: combine per-check Guardian outputs into a single final decision
+```shell
+|-- src/
+|   |-- judges/         # LLMJudge + SQLegitJudge implementations
+|   |-- testers/        # semantic/noise-row/cross-model/oracle/self-consistency/... checks
+|   |-- db_utils/       # schema parsing + execution helpers
+|   |-- eval/           # evaluation scripts (Spider/BIRD-style)
+|   |-- evalution.py    # evaluation entrypoints (name kept for compatibility)
+|-- templates/          # prompt templates for LLM-based components
+|-- assets/             # design diagrams (PDF)
+|-- run_judgment.py     # run a judge and write JSONL
+|-- run_consensus.py    # combine per-check SQLegit outputs into a final decision
+```
+
+## Contributing
+
+Contributions and suggestions are welcome.
+
+If you find bugs, encounter problems when running the code, or have suggestions for SQLegit, please submit an issue or reach out to me (kaimary1221@163.com).

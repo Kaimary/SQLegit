@@ -6,7 +6,7 @@ from pathlib import Path
 from tqdm import tqdm
 
 from src.judges.llm_judge import LLMJudge
-from src.judges.guardian_judge import GuardianJudge
+from src.judges.sqlegit_judge import SQLegitJudge
 from src.eval.bird.evaluation import execute_model
 from src.red.parser.schema import Schema
 from src.db_utils.db_info import get_db_schema_from_json
@@ -61,13 +61,13 @@ def get_data_from_bench(ex, idx, bench_name, predicted_sql_path, db_root_path):
     
 def createJudge(judge_name, enable_few_shots=False, enable_cot=False):
     judge = None
-    if "guardian" in judge_name.lower():
+    if "sqlegit" in judge_name.lower():
         match = re.search(r"gpt[-\w.]+", judge_name.lower())
         backbone = match.group() if match else DEFAULT_BACKBONE_MODEL_NAME
         tests = [cls for key, cls in TEST_CLASS_MAP.items() if key in judge_name.lower()]
         if not tests:
             raise ValueError(f"No matching test class found for '{judge_name}'")
-        judge = GuardianJudge(judge_name, backbone, *tests)
+        judge = SQLegitJudge(judge_name, backbone, *tests)
     else:
         judge = LLMJudge(judge_name, model_name=judge_name, 
                          enable_few_shot=enable_few_shots,
@@ -76,11 +76,11 @@ def createJudge(judge_name, enable_few_shots=False, enable_cot=False):
     return judge
 
 def print_summary(judge, ret, munch, idx, judgment_gold_label, output_file_name, output_file_dir):
-    if not isinstance(judge, GuardianJudge): return
+    if not isinstance(judge, SQLegitJudge): return
     if ret['final_judgment'] == "UNDETERMINED": return
 
     judgment_baseline_label = None
-    baseline_output_file_name = re.sub(r"guardian\+|\([^)]*\)", "", output_file_name)
+    baseline_output_file_name = re.sub(r"sqlegit\+|\([^)]*\)", "", output_file_name)
     baseline_output_file_path = os.path.join(output_file_dir, baseline_output_file_name)
     if not os.path.exists(baseline_output_file_path): 
         print(f"\033[31m\nWarning! Baseline output file does not exist ...\033[0m")

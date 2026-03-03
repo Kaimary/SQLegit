@@ -126,7 +126,7 @@ class LLM:
         if constructor is AzureChatOpenAI:
             params.setdefault(
                 "timeout",
-                _env_float("CHECKLIST_LLM_TIMEOUT_S", "LLM_TIMEOUT_S", default=30.0),
+                _env_float("SQLEGIT_LLM_TIMEOUT_S", "LLM_TIMEOUT_S", default=30.0),
             )
         if self.base_uri and "openai_api_base" in params:
             params["openai_api_base"] = f"{self.base_uri}/v1"

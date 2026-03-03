@@ -388,7 +388,7 @@ def global_judgment(
     return _pick_by_confidence(voted)
 
 
-def run_guardian_pipeline_evalution(
+def run_sqlegit_pipeline_evalution(
     *,
     data_file_path: str,
     db_root_path: str,
@@ -398,12 +398,12 @@ def run_guardian_pipeline_evalution(
     crs_jsonl: str,
     slf_jsonl: str,
     nlr_jsonl: str,
-    judge_name: str = "guardian-pipeline",
+    judge_name: str = "sqlegit-pipeline",
     benchmark_name: str = "nl2sql-bugs",
     out_jsonl: str | None = None,
 ):
     """
-    Combine 6 Guardian check results with short-circuit logic to produce a final
+    Combine 6 SQLegit check results with short-circuit logic to produce a final
     True/False per example, then report accuracy / confusion-matrix metrics and
     per-check usage counts.
     """
@@ -585,7 +585,7 @@ if __name__ == '__main__':
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--judge-name", default="guardian-pipeline")
+    parser.add_argument("--judge-name", default="sqlegit-pipeline")
     parser.add_argument("--benchmark-name", default="nl2sql-bugs")
     parser.add_argument("--db-root-path", default="data/bird/databases")
     parser.add_argument(
@@ -617,7 +617,7 @@ if __name__ == '__main__':
             return f"{args.prefix}({abbrev}).jsonl"
         raise SystemExit(f"Missing --{abbrev}-jsonl (or pass --prefix).")
 
-    run_guardian_pipeline_evalution(
+    run_sqlegit_pipeline_evalution(
         data_file_path=args.data_file_path,
         db_root_path=args.db_root_path,
         sem_jsonl=_path_or_from_prefix("sem", args.sem_jsonl),

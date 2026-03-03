@@ -2,7 +2,7 @@ from src.base_judge import BaseJudge
 from src.testsuite import TestSuite
 
 
-class GuardianJudge(BaseJudge):
+class SQLegitJudge(BaseJudge):
     def __init__(self, name, backbone_llm_model_name, *tests):
         super().__init__(name)
         self.backbone = backbone_llm_model_name
