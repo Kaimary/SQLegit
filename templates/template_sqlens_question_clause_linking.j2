@@ -1,0 +1,17 @@
+You are given a SQLite database schema, a user question, and a proposed SQL query intended to address the user's question.
+
+Follow these steps:
+1. Link the concepts, entities, and expressions in the user question to the corresponding clauses in the SQL query.
+2. For each link, indicate whether you are confident in the generated clause by answering "yes" or "no".
+
+Question:
+{{QUESTION}}. {{HINT}}
+
+Database Info:
+{{DATABASE_SCHEMA}}
+
+SQL query:
+{{SQL}}
+
+Please respond with a valid JSON object. Each key should be a concise link in the form "(question concept, SQL clause)" and each value should be "yes" or "no".
+Do NOT include any other text outside the JSON.

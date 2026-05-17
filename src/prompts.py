@@ -66,6 +66,13 @@ def _get_prompt_template(template_name: str, **kwargs: Any) -> HumanMessagePromp
         "nl_rubber_duck_debugging": {"input_variables": ["QUESTION", "SQL", "HINT", "RESULT"], "partial_variables": {"DATABASE_SCHEMA": kwargs.get("schema_string", "")}},
         "llm_nl2sql_judgment": {"input_variables": ["HINT", "QUESTION", "SQL"], "partial_variables": {"DATABASE_SCHEMA": kwargs.get("schema_string", ""), "EXAMPLES": kwargs.get("examples_string", "")}},
         "llm_cot_nl2sql_judgment": {"input_variables": ["HINT", "QUESTION", "SQL"], "partial_variables": {"DATABASE_SCHEMA": kwargs.get("schema_string", ""), "EXAMPLES": kwargs.get("examples_string", "")}},
+        "llm_self_reflection_nl2sql_judgment": {"input_variables": ["HINT", "QUESTION", "SQL", "EXECUTION_FEEDBACK"], "partial_variables": {"DATABASE_SCHEMA": kwargs.get("schema_string", "")}},
+        "sqlens_evidence_violation": {"input_variables": ["HINT", "QUESTION", "SQL"]},
+        "sqlens_insufficient_evidence": {"input_variables": ["HINT", "QUESTION", "SQL"], "partial_variables": {"DATABASE_SCHEMA": kwargs.get("schema_string", "")}},
+        "sqlens_question_clause_linking": {"input_variables": ["HINT", "QUESTION", "SQL"], "partial_variables": {"DATABASE_SCHEMA": kwargs.get("schema_string", "")}},
+        "sqlens_column_ambiguity": {"input_variables": ["HINT", "QUESTION", "SQL"], "partial_variables": {"DATABASE_SCHEMA": kwargs.get("schema_string", "")}},
+        "sqlens_self_check_bool": {"input_variables": ["HINT", "QUESTION", "SQL"], "partial_variables": {"DATABASE_SCHEMA": kwargs.get("schema_string", "")}},
+        "sqlens_fix_all_nl2sql_judgment": {"input_variables": ["HINT", "QUESTION", "SQL", "EXECUTION_FEEDBACK", "DATABASE_SIGNALS"], "partial_variables": {"DATABASE_SCHEMA": kwargs.get("schema_string", "")}},
         # "schema_pruning": {"input_variables": ["HINT", "QUESTION", "DATABASE_SCHEMA"], "partial_variables": {"KEYS": kwargs.get("keys_string", ""), "COLUMNS": kwargs.get("columns_string", ""), "ERROR": kwargs.get("error_string", "")}},
         "schema_pruning_by_selection": {"input_variables": ["HINT", "QUESTION", "LARGE_TABLES"], "partial_variables": {"ERROR": kwargs.get("error_string", "")}},
     }

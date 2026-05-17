@@ -179,22 +179,22 @@ def _sql_result_is_empty(conn: sqlite3.Connection, sql: str) -> bool | None:
 _DEFAULT_TESTER_MEAN_SECONDS: dict[str, float] = {
     # Mean runtime per tester (seconds/example). Used to estimate end-to-end
     # pipeline time and summarize time distribution (min/q1/median/q3/max).
-    "sem": 0.7044,
-    "crs": 8.3,
-    "slf": 5.4422,
-    "orc": 8.8256,
-    "nos": 9.1549,
-    "nlr": 8.1283,
+    "bt": 0.7044,
+    "ct": 8.3,
+    "dt": 5.4422,
+    "ot": 8.8256,
+    "mt": 9.1549,
+    "et": 8.1283,
 }
 # _DEFAULT_TESTER_MEAN_SECONDS: dict[str, float] = {
 #     # Mean runtime per tester (seconds/example). Used to estimate end-to-end
 #     # pipeline time and summarize time distribution (min/q1/median/q3/max).
-#     "sem": 0.1132,
-#     "crs": 2.6271,
-#     "slf": 4.2964,
-#     "orc": 5.4558,
-#     "nos": 4.5815,
-#     "nlr": 5.3699,
+#     "bt": 0.1132,
+#     "ct": 2.6271,
+#     "dt": 4.2964,
+#     "ot": 5.4558,
+#     "mt": 4.5815,
+#     "et": 5.3699,
 # }
 # Spider use
 
@@ -257,9 +257,9 @@ def one_vote_veto(
       2) ORC: only gate when SQL execution result is empty
     Returns True when veto triggers, else False.
     """
-    sem_d = _extract_decision(judgments["sem"][idx], keys["sem"])
-    check_used["sem"] += 1
-    _add_tester_time(tester="sem", time_box=time_box, counted=counted, mean_seconds=mean_seconds)
+    sem_d = _extract_decision(judgments["bt"][idx], keys["bt"])
+    check_used["bt"] += 1
+    _add_tester_time(tester="bt", time_box=time_box, counted=counted, mean_seconds=mean_seconds)
     if sem_d.verdict is False:
         return True
 
@@ -272,10 +272,10 @@ def one_vote_veto(
         empty_res = _sql_result_is_empty(conns[conn_key], sql)
 
     if empty_res is True:
-        orc_d = _extract_decision(judgments["orc"][idx], keys["orc"])
+        orc_d = _extract_decision(judgments["ot"][idx], keys["ot"])
         # orc_d = _Decision(verdict=None, confidence=orc_d.confidence)
-        check_used["orc"] += 1
-        _add_tester_time(tester="orc", time_box=time_box, counted=counted, mean_seconds=mean_seconds)
+        check_used["ot"] += 1
+        _add_tester_time(tester="ot", time_box=time_box, counted=counted, mean_seconds=mean_seconds)
         if orc_d.verdict is False:
             return True
 
@@ -321,20 +321,20 @@ def global_judgment(
     # 2) majority voting
     vote = 0.0
     voted = {}
-    crs_d = _extract_decision(judgments["crs"][idx], keys["crs"])
+    crs_d = _extract_decision(judgments["ct"][idx], keys["ct"])
     # crs_d = _Decision(verdict=None, confidence=crs_d.confidence)
-    check_used["crs"] += 1.0
-    _add_tester_time(tester="crs", time_box=time_box, counted=counted, mean_seconds=mean_seconds)
+    check_used["ct"] += 1.0
+    _add_tester_time(tester="ct", time_box=time_box, counted=counted, mean_seconds=mean_seconds)
     if isinstance(crs_d.verdict, bool):
         vote = 1.5 if crs_d.verdict else -1.5
-        voted["crs"] = crs_d
+        voted["ct"] = crs_d
     
-    orc_d = _extract_decision(judgments["orc"][idx], keys["orc"])
+    orc_d = _extract_decision(judgments["ot"][idx], keys["ot"])
     # orc_d = _Decision(verdict=None, confidence=orc_d.confidence)
-    check_used["orc"] += 1.0
-    _add_tester_time(tester="orc", time_box=time_box, counted=counted, mean_seconds=mean_seconds)
+    check_used["ot"] += 1.0
+    _add_tester_time(tester="ot", time_box=time_box, counted=counted, mean_seconds=mean_seconds)
     if isinstance(orc_d.verdict, bool):
-        voted["orc"] = orc_d
+        voted["ot"] = orc_d
         if orc_d.verdict:
             vote += 1.0 
         else:
@@ -343,12 +343,12 @@ def global_judgment(
     if abs(vote) >= majority: 
         return vote > 0
 
-    slf_d = _extract_decision(judgments["slf"][idx], keys["slf"])
+    slf_d = _extract_decision(judgments["dt"][idx], keys["dt"])
     # slf_d = _Decision(verdict=None, confidence=slf_d.confidence)
-    check_used["slf"] += 1
-    _add_tester_time(tester="slf", time_box=time_box, counted=counted, mean_seconds=mean_seconds)
+    check_used["dt"] += 1
+    _add_tester_time(tester="dt", time_box=time_box, counted=counted, mean_seconds=mean_seconds)
     if isinstance(slf_d.verdict, bool):
-        voted["slf"] = slf_d
+        voted["dt"] = slf_d
         if slf_d.verdict:
             vote += 1.0
         else:
@@ -357,12 +357,12 @@ def global_judgment(
     if abs(vote) >= majority: 
         return vote > 0
     
-    nos_d = _extract_decision(judgments["nos"][idx], keys["nos"])
+    nos_d = _extract_decision(judgments["mt"][idx], keys["mt"])
     # nos_d = _Decision(verdict=None, confidence=nos_d.confidence)
-    check_used["nos"] += 1.0
-    _add_tester_time(tester="nos", time_box=time_box, counted=counted, mean_seconds=mean_seconds)
+    check_used["mt"] += 1.0
+    _add_tester_time(tester="mt", time_box=time_box, counted=counted, mean_seconds=mean_seconds)
     if isinstance(nos_d.verdict, bool):
-        voted["nos"] = nos_d
+        voted["mt"] = nos_d
         if _sql_has_where(sql) and not nos_d.verdict:
             vote += -1.5
         else:
@@ -371,12 +371,12 @@ def global_judgment(
     if abs(vote) >= majority:
         return vote > 0
     
-    nlr_d = _extract_decision(judgments["nlr"][idx], keys["nlr"])
+    nlr_d = _extract_decision(judgments["et"][idx], keys["et"])
     nlr_d = _Decision(verdict=None, confidence=nlr_d.confidence)
-    check_used["nlr"] += 1
-    _add_tester_time(tester="nlr", time_box=time_box, counted=counted, mean_seconds=mean_seconds)
+    check_used["et"] += 1
+    _add_tester_time(tester="et", time_box=time_box, counted=counted, mean_seconds=mean_seconds)
     if isinstance(nlr_d.verdict, bool):
-        voted["nlr"] = nlr_d
+        voted["et"] = nlr_d
         if nlr_d.verdict:
             vote += 1.0
         else:
@@ -392,12 +392,12 @@ def run_sqlegit_pipeline_evalution(
     *,
     data_file_path: str,
     db_root_path: str,
-    sem_jsonl: str,
-    nos_jsonl: str,
-    orc_jsonl: str,
-    crs_jsonl: str,
-    slf_jsonl: str,
-    nlr_jsonl: str,
+    bt_jsonl: str,
+    mt_jsonl: str,
+    ot_jsonl: str,
+    ct_jsonl: str,
+    dt_jsonl: str,
+    et_jsonl: str,
     judge_name: str = "sqlegit-pipeline",
     benchmark_name: str = "nl2sql-bugs",
     out_jsonl: str | None = None,
@@ -410,21 +410,21 @@ def run_sqlegit_pipeline_evalution(
     data = json.load(open(data_file_path))
     # Abbrev key mapping (file name) -> top-level key in each JSONL line.
     keys = {
-        "sem": "semantic_check",
-        "orc": "oracle_result",
+        "bt": "semantic_check",
+        "ot": "oracle_result",
         "nos": "metamorphic_noise",
-        "crs": "cross_model",
-        "slf": "query_consistency",
-        "nlr": "nl_review",
+        "ct": "cross_model",
+        "dt": "query_consistency",
+        "et": "nl_review",
     }
 
     fps = {
-        "sem": open(sem_jsonl),
-        "orc": open(orc_jsonl),
-        "nos": open(nos_jsonl),
-        "crs": open(crs_jsonl),
-        "slf": open(slf_jsonl),
-        "nlr": open(nlr_jsonl),
+        "bt": open(bt_jsonl),
+        "ot": open(ot_jsonl),
+        "mt": open(mt_jsonl),
+        "ct": open(ct_jsonl),
+        "dt": open(dt_jsonl),
+        "et": open(et_jsonl),
     }
 
     # Read all lines once to ensure consistent lengths and allow random access.
@@ -554,7 +554,7 @@ def run_sqlegit_pipeline_evalution(
     print(f"PP: {positive_precision}, PR: {positive_recall}, NP: {negative_precision}, NR: {negative_recall}, F1: {f1}")
     print(
         "Checks used: "
-        + ", ".join(f"{k}={check_used.get(k, 0)}" for k in ["sem", "orc", "nos", "crs", "slf", "nlr"])
+        + ", ".join(f"{k}={check_used.get(k, 0)}" for k in ["bt", "ot", "nos", "ct", "dt", "et"])
     )
     if out_jsonl:
         print(f"Wrote final judgments to: {out_jsonl}")
@@ -620,12 +620,12 @@ if __name__ == '__main__':
     run_sqlegit_pipeline_evalution(
         data_file_path=args.data_file_path,
         db_root_path=args.db_root_path,
-        sem_jsonl=_path_or_from_prefix("sem", args.sem_jsonl),
-        nos_jsonl=_path_or_from_prefix("nos", args.nos_jsonl),
-        orc_jsonl=_path_or_from_prefix("orc", args.orc_jsonl),
-        crs_jsonl=_path_or_from_prefix("crs", args.crs_jsonl),
-        slf_jsonl=_path_or_from_prefix("slf", args.slf_jsonl),
-        nlr_jsonl=_path_or_from_prefix("nlr", args.nlr_jsonl),
+        bt_jsonl=_path_or_from_prefix("bt", args.bt_jsonl),
+        mt_jsonl=_path_or_from_prefix("mt", args.mt_jsonl),
+        ot_jsonl=_path_or_from_prefix("ot", args.ot_jsonl),
+        ct_jsonl=_path_or_from_prefix("ct", args.ct_jsonl),
+        dt_jsonl=_path_or_from_prefix("dt", args.dt_jsonl),
+        et_jsonl=_path_or_from_prefix("et", args.et_jsonl),
         judge_name=args.judge_name,
         benchmark_name=args.benchmark_name,
         out_jsonl=args.out_jsonl,

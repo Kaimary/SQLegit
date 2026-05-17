@@ -13,7 +13,7 @@ from src.models import MODEL_CLASS_MAP, GenericLLM
 from src.db_utils.execution import validate_sql_query
 
 
-class CrossModelTester(SchemaPruningMixin, BaseTester):
+class ConsensualTester(SchemaPruningMixin, BaseTester):
     def __init__(self):
         super().__init__("Cross Models Tester", "cross_model", "differential")
         

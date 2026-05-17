@@ -12,7 +12,7 @@ from collections import defaultdict, OrderedDict
 from .spinners import _Spinner
 
 
-HIGH_PRECISION_TESTERS = {"SemanticCheckTester", "NoiseRowTester"}
+HIGH_PRECISION_TESTERS = {"BehavioralTester", "MetamorphicTester"}
 
 class TestSuite:
     def __init__(self, format_example_fn=None, print_fn=None):

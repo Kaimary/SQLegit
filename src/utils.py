@@ -5,33 +5,41 @@ import pickle
 from pathlib import Path
 from tqdm import tqdm
 
-from src.judges.llm_judge import LLMJudge
+from src.llm import CONFIGS
+from src.judges.llm_judge import LLMJudge, LLMExecutionReflectionJudge, SQLensFixAllJudge
 from src.judges.sqlegit_judge import SQLegitJudge
 from src.eval.bird.evaluation import execute_model
 from src.red.parser.schema import Schema
 from src.db_utils.db_info import get_db_schema_from_json
-from src.testers.cross_model_tester import CrossModelTester
-from src.testers.nl_review_tester import NLReviewTester
-from src.testers.noise_row_tester import NoiseRowTester
-from src.testers.oracle_result_tester import OracleResultTester
-from src.testers.self_consistency_tester import SelfConsistencyTester
-from src.testers.semantic_check_tester import SemanticCheckTester
+from src.testers.consensual_tester import ConsensualTester
+from src.testers.exploratory_tester import ExploratoryTester
+from src.testers.metamorphic_tester import MetamorphicTester
+from src.testers.oracle_tester import OracleTester
+from src.testers.differential_tester import DifferentialTester
+from src.testers.behavioral_tester import BehavioralTester
 
 DEFAULT_BACKBONE_MODEL_NAME = "gpt-4o-mini-0708"
 TEST_CLASS_MAP = {
-    "sem": SemanticCheckTester,
-    "nos": NoiseRowTester,
-    "crs": CrossModelTester,
-    "orc": OracleResultTester,
-    "nlr": NLReviewTester,
-    "slf": SelfConsistencyTester,
+    "bt": BehavioralTester,
+    "mt": MetamorphicTester,
+    "ct": ConsensualTester,
+    "ot": OracleTester,
+    "et": ExploratoryTester,
+    "dt": DifferentialTester,
 }
-    # "test": TestingTester,
-    # "qry": QueryReviewTester,    
-    # "syn": MinimumSyntaxTester,
-    # "lax": NLRelaxTester,
-    # "stn": NLStrengthenTester,
 _PRED_CACHE = {}
+
+def _extract_llm_model_name(judge_name):
+    if judge_name in CONFIGS:
+        return judge_name
+    judge_name_lower = judge_name.lower()
+    for model_name in sorted(CONFIGS.keys(), key=len, reverse=True):
+        if model_name.lower() in judge_name_lower:
+            return model_name
+    raise ValueError(
+        f"No supported LLM model name found in '{judge_name}'. "
+        f"Supported models: {', '.join(CONFIGS.keys())}"
+    )
 
 def get_data_from_bench(ex, idx, bench_name, predicted_sql_path, db_root_path):
     db_id = ex['db_id']
@@ -61,13 +69,28 @@ def get_data_from_bench(ex, idx, bench_name, predicted_sql_path, db_root_path):
     
 def createJudge(judge_name, enable_few_shots=False, enable_cot=False):
     judge = None
-    if "sqlegit" in judge_name.lower():
+    judge_name_lower = judge_name.lower()
+    if "sqlegit" in judge_name_lower:
         match = re.search(r"gpt[-\w.]+", judge_name.lower())
         backbone = match.group() if match else DEFAULT_BACKBONE_MODEL_NAME
         tests = [cls for key, cls in TEST_CLASS_MAP.items() if key in judge_name.lower()]
         if not tests:
             raise ValueError(f"No matching test class found for '{judge_name}'")
         judge = SQLegitJudge(judge_name, backbone, *tests)
+    elif "sqlens" in judge_name_lower:
+        judge = SQLensFixAllJudge(
+            judge_name,
+            model_name=_extract_llm_model_name(judge_name),
+            enable_few_shot=enable_few_shots,
+            enable_cot=enable_cot
+        )
+    elif "self-reflection" in judge_name_lower or "self_reflection" in judge_name_lower or "selfreflection" in judge_name_lower:
+        judge = LLMExecutionReflectionJudge(
+            judge_name,
+            model_name=_extract_llm_model_name(judge_name),
+            enable_few_shot=enable_few_shots,
+            enable_cot=enable_cot
+        )
     else:
         judge = LLMJudge(judge_name, model_name=judge_name, 
                          enable_few_shot=enable_few_shots,

@@ -1,0 +1,22 @@
+You are provided with a SQLite database schema, a user question, and a proposed SQL query intended to solve the user question. Your task is to determine whether the proposed SQL correctly answers the user question.
+
+Provide an explanation only if the SQL is incorrect.
+
+Question:
+{{QUESTION}}. {{HINT}}
+
+Database Info:
+{{DATABASE_SCHEMA}}
+
+SQL query:
+{{SQL}}
+
+Please respond with a valid JSON object structured as follows:
+{% raw %}
+{
+  "correct": true or false,
+  "explanation": "your explanation of why the SQL is incorrect, or an empty string if it is correct"
+}
+{% endraw %}
+
+Do NOT include any other text outside the JSON.

@@ -109,6 +109,40 @@ class LLMJudgmentOutput(BaseModel):
     """Model for LLM judgment output."""
     judgment: str = Field(description="Yes or No")
 
+class LLMReflectionJudgmentOutput(BaseModel):
+    """Model for LLM self-reflection judgment output."""
+    reasoning_summary: str = Field(description="Brief explanation of the judgment.")
+    final_judgment: bool = Field(description="True means the SQL is correct, false means it is incorrect.")
+
+class SQLensFixAllJudgmentOutput(BaseModel):
+    """Model for SQLENS Fix-All style judgment output."""
+    database_signal_summary: str = Field(description="Summary of database-derived signals.")
+    llm_signals: Dict[str, Any] = Field(description="LLM-derived SQLENS-style signals.")
+    needs_fix: bool = Field(description="True if the original SQL needs to be corrected.")
+    corrected_sql: str = Field(description="The original SQL if no fix is needed, otherwise a corrected SQL query.")
+    reasoning_summary: str = Field(description="Brief explanation of the judgment.")
+    final_judgment: bool = Field(description="True means the SQL is correct, false means it is incorrect.")
+
+class SQLensEvidenceViolationOutput(BaseModel):
+    """SQLENS evidence violation signal."""
+    violates_evidence: bool = Field(description="Whether the SQL contradicts the provided evidence.")
+    explanation: str = Field(description="Short explanation.")
+
+class SQLensInsufficientEvidenceOutput(BaseModel):
+    """SQLENS insufficient evidence signal."""
+    insufficient_evidence: bool = Field(description="Whether there is insufficient evidence to judge the SQL.")
+    explanation: str = Field(description="Short explanation.")
+
+class SQLensColumnAmbiguityOutput(BaseModel):
+    """SQLENS column ambiguity signal."""
+    alternative_column: bool = Field(description="Whether a similar alternative column may answer the question.")
+    explanation: str = Field(description="Short explanation.")
+
+class SQLensSelfCheckOutput(BaseModel):
+    """SQLENS LLM self-check signal."""
+    correct: bool = Field(description="Whether the SQL correctly answers the question.")
+    explanation: str = Field(description="Short explanation, especially when incorrect.")
+
 class RubberDuckDebuggingOutput(BaseModel):
     """Model for LLM judgment output."""
     phrase_alignment: List[str] = Field(description="phrase alignment")
@@ -149,6 +183,13 @@ def get_parser(parser_name: str) -> BaseOutputParser:
         "noise_data_injection": lambda: JsonOutputParser(pydantic_object=NoiseDataInjectionOutput),
         # "noise_data_alignment_fix": lambda: JsonOutputParser(pydantic_object=NoiseDataAlignmentFixOutput),
         "llm_nl2sql_judgment": lambda: JsonOutputParser(pydantic_object=LLMJudgmentOutput),
+        "llm_self_reflection_nl2sql_judgment": lambda: JsonOutputParser(pydantic_object=LLMReflectionJudgmentOutput),
+        "sqlens_evidence_violation": lambda: JsonOutputParser(pydantic_object=SQLensEvidenceViolationOutput),
+        "sqlens_insufficient_evidence": lambda: JsonOutputParser(pydantic_object=SQLensInsufficientEvidenceOutput),
+        "sqlens_question_clause_linking": lambda: JsonOutputParser(),
+        "sqlens_column_ambiguity": lambda: JsonOutputParser(pydantic_object=SQLensColumnAmbiguityOutput),
+        "sqlens_self_check_bool": lambda: JsonOutputParser(pydantic_object=SQLensSelfCheckOutput),
+        "sqlens_fix_all_nl2sql_judgment": lambda: JsonOutputParser(pydantic_object=SQLensFixAllJudgmentOutput),
         "nl_rubber_duck_debugging": lambda: JsonOutputParser(pydantic_object=LLMCoTJudgmentOutput),
         "nl_paraphrase_generation": lambda: JsonOutputParser(pydantic_object=NLParaphraseOutput),
         "query_rubber_duck_debugging": lambda: JsonOutputParser(pydantic_object=LLMCoTJudgmentOutput),

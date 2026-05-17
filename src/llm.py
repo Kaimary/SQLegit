@@ -5,7 +5,7 @@ import re
 import time
 
 from langchain_deepseek import ChatDeepSeek
-from langchain_openai import AzureChatOpenAI
+from langchain_openai import AzureChatOpenAI, ChatOpenAI
 from typing import Dict, Any
 from langchain_core.output_parsers import JsonOutputParser
 
@@ -64,9 +64,9 @@ CONFIGS: Dict[str, Dict[str, Any]] = {
         "constructor": AzureChatOpenAI,
         "params": {"model": "gpt-4o-1120", "temperature": 0, "logprobs": True}
     },
-    "gpt-4o-mini-0708": {
-        "constructor": AzureChatOpenAI,
-        "params": {"model": "gpt-4o-mini-0708", "temperature": 0, "logprobs": True}
+    "gpt-4o-mini-2024-07-18": {
+        "constructor": ChatOpenAI,
+        "params": {"model": "gpt-4o-mini-2024-07-18", "temperature": 0, "logprobs": True}
     },
     "deepseek-chat": {
         "constructor": ChatDeepSeek,

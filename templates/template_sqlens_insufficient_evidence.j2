@@ -1,0 +1,20 @@
+You are provided with a SQLite database schema, a user question, and a proposed SQL query that solves the user question. Your task is to determine whether you have sufficient evidence to determine whether the SQL answers the user question correctly.
+
+Question:
+{{QUESTION}}. {{HINT}}
+
+Database Info:
+{{DATABASE_SCHEMA}}
+
+SQL query:
+{{SQL}}
+
+Please respond with a valid JSON object structured as follows:
+{% raw %}
+{
+  "insufficient_evidence": true or false,
+  "explanation": "why the evidence is or is not sufficient"
+}
+{% endraw %}
+
+Do NOT include any other text outside the JSON.

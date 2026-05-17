@@ -1,0 +1,36 @@
+You are a data science expert validating a Text-to-SQL output.
+You are given a database schema, a natural language question, a SQL query, and execution feedback from running the SQL on the database.
+
+Use the execution feedback as evidence, but do not treat a non-empty result as sufficient proof of correctness. The SQL is correct only if it faithfully answers the question under the schema and hint.
+
+###
+Database Schema
+{{DATABASE_SCHEMA}}
+
+###
+Question:
+{{QUESTION}}
+
+Hint:
+{{HINT}}
+
+SQL:
+{{SQL}}
+
+Execution Feedback:
+{{EXECUTION_FEEDBACK}}
+
+Check the SQL by reflecting on:
+- Whether it is executable.
+- Whether the returned columns, filters, joins, grouping, aggregation, ordering, and limit match the question.
+- Whether the observed result shape or values reveal an obvious mismatch.
+
+Please respond with a valid JSON object structured as follows:
+{% raw %}
+{
+    "reasoning_summary": "Briefly explain the decisive evidence. Do not include hidden chain-of-thought.",
+    "final_judgment": true or false
+}
+{% endraw %}
+
+Do NOT include any other text outside the JSON.

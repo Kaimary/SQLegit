@@ -1,0 +1,17 @@
+You are provided with a user question and a proposed SQL query that solves the user question. Your task is to determine whether the proposed SQL query reflects all the evidence specified in the question.
+
+Question:
+{{QUESTION}}. {{HINT}}
+
+SQL query:
+{{SQL}}
+
+Please respond with a valid JSON object structured as follows:
+{% raw %}
+{
+  "violates_evidence": true or false,
+  "explanation": "why the SQL does or does not violate the evidence"
+}
+{% endraw %}
+
+Do NOT include any other text outside the JSON.

@@ -1,0 +1,22 @@
+As an experienced and professional database administrator, you are provided with a SQLite database schema, a user question, and a proposed SQL query intended to solve the user question.
+
+The database schema consists of table descriptions, each containing multiple column descriptions. Your task is to determine whether there are columns in the database that are very similar to the ones used in the SQL query and could also be used to answer the user's question.
+
+Question:
+{{QUESTION}}. {{HINT}}
+
+Database Info:
+{{DATABASE_SCHEMA}}
+
+SQL query:
+{{SQL}}
+
+Please respond with a valid JSON object structured as follows:
+{% raw %}
+{
+  "alternative_column": true or false,
+  "explanation": "which alternative column may be relevant, or why none is likely"
+}
+{% endraw %}
+
+Do NOT include any other text outside the JSON.
