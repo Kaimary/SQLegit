@@ -166,10 +166,18 @@ class LLM:
                 break
             except OutputParserException as e:
                 print(e)
-                new_parser = OutputFixingParser.from_llm(parser=parser, llm=self.llm_chain)
-                chain = prompt | self.llm_chain | new_parser
-                if attempt == max_attempts - 1:
-                    raise e
+                try:
+                    new_parser = OutputFixingParser.from_llm(parser=parser, llm=self.llm_chain)
+                    output = new_parser.parse(raw_output.content)
+                    total_logprob = sum(token['logprob'] for token in raw_output.response_metadata['logprobs']['content'])
+                    metadata = {
+                        "token_used": raw_output.response_metadata['token_usage']['total_tokens'],
+                        "avg_logprob": total_logprob / (len(raw_output.response_metadata['logprobs']['content']))
+                    }
+                    break
+                except Exception:
+                    if attempt == max_attempts - 1:
+                        raise e
             except Exception as e:
                 print(f"Attempt {attempt + 1} failed with error: {e}")
                 if attempt < max_attempts - 1:
