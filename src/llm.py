@@ -66,7 +66,7 @@ CONFIGS: Dict[str, Dict[str, Any]] = {
     },
     "gpt-4o-mini-2024-07-18": {
         "constructor": ChatOpenAI,
-        "params": {"model": "gpt-4o-mini-2024-07-18", "temperature": 0, "logprobs": True}
+        "params": {"model": "gpt-4o-mini-2024-07-18", "temperature": 0, "logprobs": True, "max_tokens": 160}
     },
     "deepseek-chat": {
         "constructor": ChatDeepSeek,
@@ -123,7 +123,7 @@ class LLM:
 
         # Keep single-call tail latency bounded; override via env if needed.
         # NOTE: read env here (not at import time) so `.env` loaded elsewhere can take effect.
-        if constructor is AzureChatOpenAI:
+        if constructor in (AzureChatOpenAI, ChatOpenAI):
             params.setdefault(
                 "timeout",
                 _env_float("SQLEGIT_LLM_TIMEOUT_S", "LLM_TIMEOUT_S", default=30.0),

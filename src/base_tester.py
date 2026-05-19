@@ -161,7 +161,11 @@ class SchemaPruningMixin:
         )
         large_tables = {}
         for t in tables_larger_than_threshold_cols:
-            cols = [c for c in schema[t] if t.lower() not in kept.keys() or (t.lower() in kept.keys() and c not in kept[t.lower()])]
+            kept_lc = {
+                str(c).lower()
+                for c in kept.get(t.lower(), [])
+            }
+            cols = [c for c in schema[t] if c.lower() not in kept_lc]
             large_tables[t] = cols
 
         retry = 0
@@ -191,8 +195,20 @@ class SchemaPruningMixin:
                     if t not in response.keys():
                         pruned_schema[t] = schema[t]
                     else:
-                        pruned_schema[t] = response[t]
-                        if t.lower() in kept.keys(): pruned_schema[t].extend(kept[t.lower()])
+                        actual_cols_by_lc = {c.lower(): c for c in schema[t]}
+                        selected_cols = set()
+                        for col in response[t]:
+                            actual_col = actual_cols_by_lc.get(str(col).lower(), col)
+                            selected_cols.add(str(actual_col).lower())
+                        for col in kept.get(t.lower(), []):
+                            actual_col = actual_cols_by_lc.get(str(col).lower())
+                            if actual_col is None:
+                                continue
+                            selected_cols.add(actual_col.lower())
+                        pruned_schema[t] = [
+                            col for col in schema[t]
+                            if col.lower() in selected_cols
+                        ]
                 logging.info(f"Pruned schema: {json.dumps(response, indent=4)}")
                 self.schema_pruned = True
                 return pruned_schema, True
